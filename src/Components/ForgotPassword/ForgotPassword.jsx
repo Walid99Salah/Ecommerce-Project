@@ -4,8 +4,14 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import Home from "../Home/Home";
+import { UserContext } from "../../Context/UserContext";
+import UpdatePassword from "../UpdatePassword/UpdatePassword";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
+  let {successResetCode , setSuccessResetCode} = useContext(UserContext);
+  let navigate = useNavigate()
+
   if (localStorage.getItem('userToken')) {
     return <Home/>
   }else{
@@ -37,9 +43,12 @@ export default function ForgotPassword() {
   async function code(values) {
     try {
       let { data } = await axios.post(`https://ecommerce.routemisr.com/api/v1/auth/verifyResetCode` , values);
-      setResetSend(data.status)
+      // setResetSend(data.status)
+      setSuccessResetCode(data.status);
+      navigate('/updatepassword')
     } catch (error) {
       console.log(error.response.data.message);
+      setApiError(error.response.data.message)
     }
   }
 
@@ -77,7 +86,7 @@ export default function ForgotPassword() {
             </button>
           
         </form>
-      </div> : <div className="pt-8 w-1/2 mx-auto">
+      </div> :  <div className="pt-8 w-1/2 mx-auto">
         <h2 className="text-3xl py-6 text-emerald-600 font-semibold">Send Now</h2>
         <form onSubmit={formik2.handleSubmit}>
           {apiError && (<div className="px-4 py-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">

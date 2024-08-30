@@ -1,21 +1,26 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Home from "../Home/Home";
 import * as Yup from "yup";
+import { UserContext } from "../../Context/UserContext";
+import Notfound from "../Notfound/Notfound";
+import { useNavigate } from "react-router-dom";
 
 
 export default function UpdatePassword() {
+  let {successResetCode , setSuccessResetCode} = useContext(UserContext)
+  let navigate = useNavigate()
   if (localStorage.getItem("userToken")) {
     return <Home />;
-  } else {
+  }else if(successResetCode == 'Success') {
 
     const [apiError, setApiError] = useState(null);
 
     async function reset(values) {
         try {
           let { data } = await axios.put(`https://ecommerce.routemisr.com/api/v1/auth/resetPassword` , values);
-          setSucSend(data.statusMsg);
+          navigate('/login')
         } catch (error) {
           console.log(error.response.data.message);
           setApiError(error.response.data.message);
@@ -79,5 +84,7 @@ export default function UpdatePassword() {
 
     
     </>;
+  }else{
+    return <Notfound/>
   }
 }
